@@ -28,7 +28,7 @@ class AddSongContainer extends React.Component {
   handleSubmit (evt) {
     evt.preventDefault();
 
-    const playlistId = this.props.selectedPlaylist.id;
+    const playlistId = this.props.playlists.selectedPlaylist.id;
     const songId = this.state.songId;
 
     this.props.addSongToPlaylist(playlistId, songId)

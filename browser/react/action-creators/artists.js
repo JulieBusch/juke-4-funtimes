@@ -4,7 +4,7 @@ import {
 } from '../constants';
 
 import axios from 'axios';
-//import { convertArtists, convertArtist } from '../utils';
+import { convertAlbums, convertSong } from '../utils';
 
 
 export const fetchArtists = function () {
@@ -18,15 +18,25 @@ export const fetchArtists = function () {
 export const receiveArtists = function(artists) {
   return {
     type: RECEIVE_ARTISTS,
-    artists: convertArtists(artists)
+    artists: artists
   }
 }
 
 export const fetchArtist = function (artistId) {
   return function (dispatch, getState) {
-    axios.get(`/api/artists/${artistId}`)
-      .then(res => {
-        dispatch(receiveArtist(res.data));
+    Promise
+      .all([
+        axios.get(`/api/artists/${artistId}`),
+        axios.get(`/api/artists/${artistId}/albums`),
+        axios.get(`/api/artists/${artistId}/songs`)
+      ])
+      .then(res => res.map(r => r.data))
+      .then(([artist, albums, songs]) => {
+        songs = songs.map(convertSong);
+        albums = convertAlbums(albums);
+        artist.albums = albums;
+        artist.songs = songs;
+        dispatch(receiveArtist(artist));
       });
   };
 };
@@ -34,6 +44,6 @@ export const fetchArtist = function (artistId) {
 export const receiveArtist = function(artist) {
   return {
     type: RECEIVE_ARTIST,
-    selectedArtist: convertArtist(artist)
+    selectedArtist: artist
   }
 }

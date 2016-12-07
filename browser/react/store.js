@@ -12,7 +12,7 @@ const combined = combineReducers({
   lyrics: lyricsReducer,
   player: playerReducer,
   albums: albumsReducer,
-  // artists: artistsReducer,
+  artists: artistsReducer,
   playlists: playlistsReducer//,
   // songs:songsReducer
 });

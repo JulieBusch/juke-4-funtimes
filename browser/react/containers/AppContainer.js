@@ -63,11 +63,11 @@ export default class AppContainer extends Component {
   }
 
   onLoad (albums, artists, playlists) {
-    this.setState({
-      // albums: convertAlbums(albums),
-      artists: artists//,
-      // playlists: playlists
-    });
+    // this.setState({
+    //   // albums: convertAlbums(albums),
+    //   //artists: artists//,
+    //   // playlists: playlists
+    // });
     //PUT THESE IN A REDUCER
     //store.dispatch(receiveAlbums(albums));
     // store.dispatch(receiveArtists(artists));
@@ -135,14 +135,15 @@ export default class AppContainer extends Component {
   }
 
   selectArtist (artistId) {
-    Promise
-      .all([
-        axios.get(`/api/artists/${artistId}`),
-        axios.get(`/api/artists/${artistId}/albums`),
-        axios.get(`/api/artists/${artistId}/songs`)
-      ])
-      .then(res => res.map(r => r.data))
-      .then(data => this.onLoadArtist(...data));
+    // Promise
+    //   .all([
+    //     axios.get(`/api/artists/${artistId}`),
+    //     axios.get(`/api/artists/${artistId}/albums`),
+    //     axios.get(`/api/artists/${artistId}/songs`)
+    //   ])
+    //   .then(res => res.map(r => r.data))
+    //   .then(data => this.onLoadArtist(...data));
+    store.dispatch(fetchArtist(artistId));
   }
 
   onLoadArtist (artist, albums, songs) {
@@ -206,7 +207,7 @@ export default class AppContainer extends Component {
     //       selectedPlaylist: newSelectedPlaylist
     //     });
     //   });
-    store.dispatch(addSongToPlaylist(playlistId, songId));
+    return store.dispatch(addSongToPlaylist(playlistId, songId));
   }
 
   render () {

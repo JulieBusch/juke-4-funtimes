@@ -55,7 +55,7 @@ export const addPlaylist = function (playlistName) {
 
 export const addSongToPlaylist = function (playlistId, songId) {
   return function (dispatch, getState) {
-    axios.post(`/api/playlists/${playlistId}/songs`, {
+    return axios.post(`/api/playlists/${playlistId}/songs`, {
       id: songId
       })
       .then(res => res.data)
