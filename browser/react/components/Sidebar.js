@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 
 const Sidebar = (props) => {
-
-  const playlists = props.playlists;
+  const playlists = (props.playlists) ? props.playlists.playlists : null;
 
   return (
     <sidebar>
@@ -30,7 +29,7 @@ const Sidebar = (props) => {
       <hr />
       <ul className="list-unstyled">
         {
-          playlists.map(playlist => {
+          playlists && playlists.map(playlist => {
             return (
             <li key={playlist.id} className="playlist-item menu-item">
               <Link to={`/playlists/${playlist.id}`}>{playlist.name}</Link>

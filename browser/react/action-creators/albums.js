@@ -4,45 +4,36 @@ import {
 } from '../constants';
 
 import axios from 'axios';
+import { convertAlbums, convertAlbum } from '../utils';
 
-export const startPlaying = () => ({ type: START_PLAYING });
-
-export const stopPlaying = () => ({ type: STOP_PLAYING });
-
-export const setCurrentSong = function (song) {
-  return {
-    type: SET_CURRENT_SONG,
-    currentSong: song
-  };
-};
-
-export const setCurrentSongList = function (songList) {
-  return {
-    type: SET_LIST,
-    currentSongList: songList
-  };
-};
 
 export const fetchAlbums = function () {
   return function (dispatch, getState) {
     axios.get('/api/albums/')
-      .then(res => res)
+      .then(res => dispatch(receiveAlbums(res.data)))
       .catch(err => console.error(err));
   };
 };
 
-export const playAsync = function () {
-  return function (dispatch, getState) {
-    AUDIO.play();
-    return dispatch(startPlaying());
-  };
+export const receiveAlbums = function(albums) {
+  return {
+    type: RECEIVE_ALBUMS,
+    albums: convertAlbums(albums)
+  }
+}
 
+export const fetchAlbum = function (albumId) {
+  return function (dispatch, getState) {
+    axios.get(`/api/albums/${albumId}`)
+      .then(res => {
+        dispatch(receiveAlbum(res.data));
+      });
+  };
 };
 
-export const pauseAsync = function () {
-  return function (dispatch, getState) {
-    AUDIO.pause();
-    return dispatch(stopPlaying());
-  };
-
-};
+export const receiveAlbum = function(album) {
+  return {
+    type: RECEIVE_ALBUM,
+    selectedAlbum: convertAlbum(album)
+  }
+}

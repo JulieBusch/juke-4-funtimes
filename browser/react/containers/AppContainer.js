@@ -11,6 +11,9 @@ import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
 import store from '../store';
 import {playAsync, pauseAsync, loadAsync, startSongAsync, toggleOneAsync, toggleAsync, nextAsync, prevAsync} from '../action-creators/player';
+import {fetchAlbums, fetchAlbum} from '../action-creators/albums';
+import {fetchArtists, fetchArtist} from '../action-creators/artists';
+import {addPlaylist, fetchPlaylists, fetchPlaylist, addSongToPlaylist} from '../action-creators/playlists';
 
 import { convertAlbum, convertAlbums, convertSong, skip } from '../utils';
 
@@ -39,15 +42,15 @@ export default class AppContainer extends Component {
     this.unsubscribe = store.subscribe(() => {
       this.setState(store.getState());
     });
-
-    Promise
-      .all([
-        store.dispatch(fetchAlbums()),
-        axios.get('/api/artists/'),
-        axios.get('/api/playlists')
-      ])
-      .then(res => res.map(r => r.data))
-      .then(data => this.onLoad(...data));
+    store.dispatch(fetchAlbums());
+    store.dispatch(fetchPlaylists());
+    store.dispatch(fetchArtists());
+    // Promise
+    //   .all([
+    //     axios.get('/api/artists/')
+    //   ])
+    //   .then(res => res.map(r => r.data))
+    //   .then(data => this.onLoad(...data));
 
     AUDIO.addEventListener('ended', () =>
       this.next());
@@ -60,15 +63,15 @@ export default class AppContainer extends Component {
   }
 
   onLoad (albums, artists, playlists) {
-    // this.setState({
-    //   albums: convertAlbums(albums),
-    //   artists: artists,
-    //   playlists: playlists
-    // });
+    this.setState({
+      // albums: convertAlbums(albums),
+      artists: artists//,
+      // playlists: playlists
+    });
     //PUT THESE IN A REDUCER
-    store.dispatch(receiveAlbums(albums));
-    store.dispatch(receiveArtists(artists));
-    store.dispatch(receivePlaylists(playlists));
+    //store.dispatch(receiveAlbums(albums));
+    // store.dispatch(receiveArtists(artists));
+    // store.dispatch(receivePlaylists(playlists));
   }
 
   play () {
@@ -128,11 +131,7 @@ export default class AppContainer extends Component {
   }
 
   selectAlbum (albumId) {
-    axios.get(`/api/albums/${albumId}`)
-      .then(res => res.data)
-      .then(album => this.setState({
-        selectedAlbum: convertAlbum(album)
-      }));
+    store.dispatch(fetchAlbum(albumId));
   }
 
   selectArtist (artistId) {
@@ -156,26 +155,28 @@ export default class AppContainer extends Component {
   }
 
   addPlaylist (playlistName) {
-    axios.post('/api/playlists', { name: playlistName })
-      .then(res => res.data)
-      .then(playlist => {
-        this.setState({
-          playlists: [...this.state.playlists, playlist]
-        }, () => {
-          hashHistory.push(`/playlists/${playlist.id}`)
-        });
-      });
+    // axios.post('/api/playlists', { name: playlistName })
+    //   .then(res => res.data)
+    //   .then(playlist => {
+    //     this.setState({
+    //       playlists: [...this.state.playlists, playlist]
+    //     }, () => {
+    //       hashHistory.push(`/playlists/${playlist.id}`)
+    //     });
+    //   });
+    store.dispatch(addPlaylist(playlistName));
   }
 
   selectPlaylist (playlistId) {
-    axios.get(`/api/playlists/${playlistId}`)
-      .then(res => res.data)
-      .then(playlist => {
-        playlist.songs = playlist.songs.map(convertSong);
-        this.setState({
-          selectedPlaylist: playlist
-        });
-      });
+    // axios.get(`/api/playlists/${playlistId}`)
+    //   .then(res => res.data)
+    //   .then(playlist => {
+    //     playlist.songs = playlist.songs.map(convertSong);
+    //     this.setState({
+    //       selectedPlaylist: playlist
+    //     });
+    //   });
+    store.dispatch(fetchPlaylist(playlistId));
   }
 
   loadSongs (songs) {
@@ -189,22 +190,23 @@ export default class AppContainer extends Component {
   }
 
   addSongToPlaylist (playlistId, songId) {
-    return axios.post(`/api/playlists/${playlistId}/songs`, {
-      id: songId
-    })
-      .then(res => res.data)
-      .then(song => {
-        const selectedPlaylist = this.state.selectedPlaylist;
-        const songs = this.state.selectedPlaylist.songs;
-        const newSongs = [...songs, convertSong(song)];
-        const newSelectedPlaylist = Object.assign({}, selectedPlaylist, {
-          songs: newSongs
-        });
+    // return axios.post(`/api/playlists/${playlistId}/songs`, {
+    //   id: songId
+    // })
+    //   .then(res => res.data)
+    //   .then(song => {
+    //     const selectedPlaylist = this.state.selectedPlaylist;
+    //     const songs = this.state.selectedPlaylist.songs;
+    //     const newSongs = [...songs, convertSong(song)];
+    //     const newSelectedPlaylist = Object.assign({}, selectedPlaylist, {
+    //       songs: newSongs
+    //     });
 
-        this.setState({
-          selectedPlaylist: newSelectedPlaylist
-        });
-      });
+    //     this.setState({
+    //       selectedPlaylist: newSelectedPlaylist
+    //     });
+    //   });
+    store.dispatch(addSongToPlaylist(playlistId, songId));
   }
 
   render () {

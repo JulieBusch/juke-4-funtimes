@@ -12,9 +12,9 @@ const combined = combineReducers({
   lyrics: lyricsReducer,
   player: playerReducer,
   albums: albumsReducer,
-  artists: artistsReducer,
-  playlists: playlistsReducer,
-  songs:songsReducer
+  // artists: artistsReducer,
+  playlists: playlistsReducer//,
+  // songs:songsReducer
 });
 
 export default createStore(combined, applyMiddleware(createLogger(), thunkMiddleware));

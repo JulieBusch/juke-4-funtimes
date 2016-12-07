@@ -8,7 +8,7 @@ export const initialAlbumsState = {
   selectedAlbum: {}
 };
 
-export default function (state = initialPlayerState, action) {
+export default function (state = initialAlbumsState, action) {
 
   const newState = Object.assign({}, state);
 
